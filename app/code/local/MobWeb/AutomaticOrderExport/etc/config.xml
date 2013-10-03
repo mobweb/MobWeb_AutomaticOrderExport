@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+    <modules>
+        <MobWeb_AutomaticOrderExport>
+            <version>0.1.0</version>
+        </MobWeb_AutomaticOrderExport>
+    </modules>
+    <global>
+        <models>
+        	<!-- This model is used for the Observer class -->
+            <automaticorderexport>
+                <class>MobWeb_AutomaticOrderExport_Model</class>
+            </automaticorderexport>
+        </models>
+    </global>
+    <frontend>
+        <events>
+            <!-- This observer is called every time an order is placed
+            with your store -->
+            <sales_order_place_after>
+                <observers>
+                    <automaticorderexport>
+                        <type>singleton</type>
+                        <class>automaticorderexport/observer</class>
+                        <method>salesOrderPlaceAfter</method>
+                    </automaticorderexport>
+                </observers>
+            </sales_order_place_after>
+        </events>
+    </frontend>
+    <crontab>
+        <jobs>
+            <!-- Instead of calling an observer every time after an order is placed, this method is called once every 5 minutes and handles all the new orders -->
+            <automaticorderexport>
+                <schedule>
+                    <cron_expr>*/5 * * * *</cron_expr>
+                </schedule>
+                <run>
+                    <model>automaticorderexport/observer::batchOrderExport</model>
+                </run>
+            </automaticorderexport>
+        </jobs>
+    </crontab>
+ </config>
